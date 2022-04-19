@@ -1,4 +1,4 @@
-﻿using System.Diagnostics;
+using System.Diagnostics;
 
 bool programCycle = true;
 
@@ -141,6 +141,8 @@ void DeleteLastSolve()
         Console.WriteLine("Your last solve was deleted.");
     else
         Console.WriteLine("No solves to delete.");
+    Console.WriteLine();
+    Console.WriteLine($"(?) Press ANY KEY to get back");
 
     string tempFile = Path.GetTempFileName();
 
@@ -209,6 +211,8 @@ Result GetInput(bool requireInput = false)
         return Result.Continue;
     else if (inputKey == ConsoleKey.A)
         return Result.ShowAllSolves;
+    else if (inputKey == ConsoleKey.R)
+        return Result.ShowRecords;
     else if (inputKey == ConsoleKey.RightArrow)
         return Result.Next;
     else if (inputKey == ConsoleKey.LeftArrow)
@@ -237,6 +241,8 @@ void HandleInput(Result input)
         DeleteLastSolve();
     else if (input == Result.ShowAllSolves)
         ShowAllSolves();
+    else if (input == Result.ShowRecords)
+        ShowRecords();
     else if (input == Result.ToggleAnimation)
         ChangeSetting(SettingsChange.Animation);
     else if (input == Result.Plus2 || input == Result.DNF || input == Result.NoPenalty)
@@ -292,6 +298,40 @@ void ShowAllSolves()
         }
     } while (true);
 }
+void ShowRecords()
+{
+    Console.Clear();
+    Console.WriteLine("Your Records:");
+    double bestTime = Int32.MaxValue,
+        avgTime =0, avgTime5 = 0;
+    for (int i = 0; i < allSolves.Count; i++)
+    {
+        if (allSolves[i].Time < bestTime)
+            bestTime = allSolves[i].Time;
+
+        avgTime += allSolves[i].Time;
+
+        if (i > allSolves.Count - 6)
+            avgTime5 += allSolves[i].Time;
+
+        if (i == allSolves.Count - 1)
+        {
+            avgTime /= allSolves.Count;
+            avgTime5 /= 5;
+
+            avgTime = Math.Round(avgTime, 3);
+            avgTime5 = Math.Round(avgTime5, 3);
+        }
+    }
+
+    Console.WriteLine($"Best time - {bestTime}");
+    Console.WriteLine($"Average time - {avgTime}");
+    Console.WriteLine($"Average time of 5 - {avgTime5}");
+    Console.WriteLine();
+    Console.WriteLine($"(?) Press ANY KEY to get back");
+
+    GetInput(true);
+}
 void DisplayTimer()
 {
     Console.Clear();
@@ -342,6 +382,7 @@ void ShowControls()
     Console.WriteLine("(?) Press ANY KEY to re-scramble");
     Console.WriteLine("(?) Press SPACEBAR to start timer");
     Console.WriteLine("(?) Press A to see all solves");
+    Console.WriteLine("(?) Press R to see your records");
     Console.WriteLine("(?) Press Delete to delete last solve");
     Console.WriteLine("(?) Press M to toggle animation");
     Console.WriteLine("(?) Press Q to quit");
