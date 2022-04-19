@@ -430,72 +430,56 @@ public class VisualCube
         }
     }
 
-    public void DrawAndUpdate(bool animate, int intervalInMilliseconds = 150, string savedTextBeforeImage = "")
+    public void DrawUpdateAndResetAfter(bool animate, int intervalInMilliseconds = 150, string savedTextBeforeImage = "")
     {
         if (String.IsNullOrWhiteSpace(scramble))
             return;
 
         String.Concat(scramble.Where(c => !Char.IsWhiteSpace(c)));
         Stopwatch sw = new Stopwatch();
-        if (!animate)
+        sw.Start();
+
+        int i = 0;
+        while (true)
         {
-            for (int i = 0; i < scramble.Length; i++)
+            if (!animate || sw.ElapsedMilliseconds > intervalInMilliseconds)
             {
-                if (i < scramble.Length - 1)
-                {
-                    if (scramble[i + 1] == '2' || scramble[i + 1] == '\'')
+                if (i < scramble.Length)
+                    if (i < scramble.Length - 1)
                     {
-                        Update(scramble[i], scramble[i + 1]);
-                        i++;
+                        if (scramble[i + 1] == '2' || scramble[i + 1] == '\'')
+                        {
+                            Update(scramble[i], scramble[i + 1]);
+                            i++;
+                        }
+                        else
+                        {
+                            Update(scramble[i], ' ');
+                        }
                     }
                     else
-                    {
                         Update(scramble[i], ' ');
-                    }
-                }
-                else
-                    Update(scramble[i], ' ');
-            }
 
+                if (animate)
+                {
+                    Console.Clear();
+                    Console.WriteLine(savedTextBeforeImage);
+                    Draw();
+                }
+                sw.Restart();
+
+                if (i == scramble.Length)
+                    break;
+                i++;
+            }
+        }
+        if (!animate)
+        {
             Console.Clear();
             Console.WriteLine(savedTextBeforeImage);
             Draw();
         }
-        else
-        {
-            sw.Start();
-            int u = 0;
-            while (true)
-            {
-                if (sw.ElapsedMilliseconds > intervalInMilliseconds)
-                {
-                    if (u < scramble.Length)
-                        if (u < scramble.Length - 1)
-                        {
-                            if (scramble[u + 1] == '2' || scramble[u + 1] == '\'')
-                            {
-                                Update(scramble[u], scramble[u + 1]);
-                                u++;
-                            }
-                            else
-                            {
-                                Update(scramble[u], ' ');
-                            }
-                        }
-                        else
-                            Update(scramble[u], ' ');
-
-                    Console.Clear();
-                    Console.WriteLine(savedTextBeforeImage);
-                    Draw();
-                    sw.Restart();
-
-                    if (u == scramble.Length)
-                        break;
-                    u++;
-                }
-            }
-        }
+        Reset();
     }
 
     private void DrawPixel(int cubePoint)
@@ -523,6 +507,14 @@ public class VisualCube
         }
         Console.Write("██");
         Console.ResetColor();
+    }
+
+    private void Reset()
+    {
+        for (int i = 0; i < 6; i++)
+            for (int j = 0; j < 3; j++)
+                for (int k = 0; k < 3; k++)
+                    cube[i][j, k] = i;
     }
 
     public string Scramble { get => scramble; set => scramble = value; }
