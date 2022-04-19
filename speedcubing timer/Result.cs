@@ -1,4 +1,4 @@
-﻿public enum Result
+public enum Result
 {
     Nothing,
     Continue,
@@ -11,6 +11,7 @@
     ToggleAnimation,
     SolveDeleted,
     ShowAllSolves,
+    ShowRecords,
     TimerStopped,
     TimerStarted,
 }
