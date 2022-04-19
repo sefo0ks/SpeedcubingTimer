@@ -1,4 +1,4 @@
-﻿public class Solve
+public class Solve
 {
     double time;
     string scramble, savePath;
@@ -18,13 +18,31 @@
         if (time > 60)
         {
             int minutes = (int)time / 60;
-            Console.WriteLine($"{minutes}min {Math.Round(time % 60, 3)}sec | {scramble}| " +
-                $"{date.Day}.{date.Month}.{date.Year} {date.Hour}:{date.Minute}");
+            Console.Write($"{minutes}min {Math.Round(time % 60, 3)}sec | {scramble}| " +
+                $"{date.Day}.{date.Month}.{date.Year} ");
+            if (date.Hour < 10)
+                Console.Write($"0{date.Hour}:");
+            else
+                Console.Write($"{date.Hour}:");
+            if (date.Minute < 10)
+                Console.Write($"0{date.Minute}");
+            else
+                Console.Write($"{date.Minute}");
         } else
         {
-            Console.WriteLine($"{time}sec | {scramble} | " +
-                $"{date.Day}.{date.Month}.{date.Year} {date.Hour}:{date.Minute}");
+            Console.Write($"{time}sec | {scramble} | " +
+                $"{date.Day}.{date.Month}.{date.Year} ");
+
+            if (date.Hour < 10)
+                Console.Write($"0{date.Hour}:");
+            else
+                Console.Write($"{date.Hour}:");
+            if (date.Minute < 10)
+                Console.Write($"0{date.Minute}");
+            else
+                Console.Write($"{date.Minute}");
         }
+        Console.WriteLine();
     }
 
     public void ShowWithMoreText()
@@ -32,13 +50,32 @@
         if (time > 60)
         {
             int minutes = (int)time / 60;
-            Console.WriteLine($"Time: {minutes}min {Math.Round(time % 60, 3)}sec | Scrumble: {scramble} | " +
-                $"Date: {date.Day}.{date.Month}.{date.Year} {date.Hour}:{date.Minute}");
+            Console.Write($"Time: {minutes}min {Math.Round(time % 60, 3)}sec | Scrumble: {scramble} | " +
+                $"Date: {date.Day}.{date.Month}.{date.Year} ");
+
+            if (date.Hour < 10)
+                Console.Write($"0{date.Hour}:");
+            else
+                Console.Write($"{date.Hour}:");
+            if (date.Minute < 10)
+                Console.Write($"0{date.Minute}");
+            else
+                Console.Write($"{date.Minute}");
         } else
         {
-            Console.WriteLine($"Time: {time}sec | Scrumble: {scramble} | " +
-                $"Date: {date.Day}.{date.Month}.{date.Year} {date.Hour}:{date.Minute}");
+            Console.Write($"Time: {time}sec | Scrumble: {scramble} | " +
+                $"Date: {date.Day}.{date.Month}.{date.Year} ");
+
+            if (date.Hour < 10)
+                Console.Write($"0{date.Hour}:");
+            else
+                Console.Write($"{date.Hour}:");
+            if (date.Minute < 10)
+                Console.Write($"0{date.Minute}");
+            else
+                Console.Write($"{date.Minute}");
         }
+        Console.WriteLine();
     }
 
     public void Save()
