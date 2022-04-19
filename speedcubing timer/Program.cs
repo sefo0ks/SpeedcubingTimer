@@ -1,11 +1,16 @@
 ﻿using System.Diagnostics;
 
+ConsoleColor defaultFore = ConsoleColor.Black;
+ConsoleColor defaultBack = ConsoleColor.Gray;
+Console.ForegroundColor = defaultFore;
+Console.BackgroundColor = defaultBack;
+
 bool programCycle = true;
 
 List<Solve> allSolves = new List<Solve>();
 Scramble scramble = new Scramble();
 SpeedcubingTimer timer = new SpeedcubingTimer();
-VisualCube cube = new VisualCube();
+VisualCube cube = new VisualCube(defaultFore, defaultBack);
 bool doAnimation = false;
 
 string savePath = @$"{Environment.CurrentDirectory}\Data";
@@ -49,6 +54,26 @@ void LoadSettings()
     if (fail)
         File.Delete(settingsSavePath);
 
+}
+void SetTextColor(ColorType color)
+{
+    switch (color)
+    {
+        case ColorType.Default:
+            Console.ForegroundColor = ConsoleColor.Black;
+            break;
+        case ColorType.Info:
+            Console.ForegroundColor = ConsoleColor.DarkBlue;
+            break;
+        case ColorType.Time:
+            Console.ForegroundColor = ConsoleColor.Red;
+            break;
+    }
+}
+void ResetColors()
+{
+    Console.ForegroundColor = defaultFore;
+    Console.BackgroundColor = defaultBack;
 }
 
 // Add solves to allSolves Collection
@@ -264,7 +289,9 @@ void ShowAllSolves()
         Console.WriteLine($"All solves: (Page {pageIndex + 1}/{maxPage + 1})");
         if (allSolves.Count < 1)
         {
-            Console.WriteLine("No solves fo far.");
+            SetTextColor(ColorType.Info);
+            Console.WriteLine("(?) No solves fo far.");
+            ResetColors();
         } else
         {
             solveStartIndexOnPage = solvesPerPage * pageIndex;
@@ -277,11 +304,13 @@ void ShowAllSolves()
             }
         }
         Console.WriteLine();
+        SetTextColor(ColorType.Info);
         if (pageIndex < maxPage)
             Console.WriteLine("(?) Press -> to go to next page");
         if (pageIndex > 0)
             Console.WriteLine("(?) Press <- to go to previous page");
         Console.WriteLine("(?) Press Enter to get back");
+        ResetColors();
 
         switch (GetInput(true))
         {
@@ -324,10 +353,32 @@ void ShowRecords()
         }
     }
 
-    Console.WriteLine($"Best time - {bestTime}");
-    Console.WriteLine($"Average time - {avgTime}");
-    Console.WriteLine($"Average time of 5 - {avgTime5}");
+    Console.Write("Best time - ");
+    SetTextColor(ColorType.Time);
+    if (bestTime > 60)
+        Console.WriteLine($"{(int)bestTime / 60}m {Math.Round(bestTime % 60, 3)}s");
+    else
+        Console.WriteLine($"{bestTime}s");
+    ResetColors();
+
+    Console.Write("Average time - ");
+    SetTextColor(ColorType.Time);
+    if (avgTime > 60)
+        Console.WriteLine($"{(int)avgTime / 60}m {Math.Round(avgTime % 60, 3)}s");
+    else
+        Console.WriteLine($"{avgTime}s");
+    ResetColors();
+
+    Console.Write("Average time of 5 - ");
+    SetTextColor(ColorType.Time);
+    if (avgTime5 > 60)
+        Console.WriteLine($"{(int)avgTime5 / 60}m {Math.Round(avgTime5 % 60, 3)}s");
+    else
+        Console.WriteLine($"{avgTime5}s");
+    ResetColors();
+    
     Console.WriteLine();
+    SetTextColor(ColorType.Info);
     Console.WriteLine($"(?) Press ANY KEY to get back");
 
     GetInput(true);
@@ -335,6 +386,7 @@ void ShowRecords()
 void DisplayTimer()
 {
     Console.Clear();
+    SetTextColor(ColorType.Time);
     Console.WriteLine(timer.GetTime());
 
     Stopwatch sw = new Stopwatch();
@@ -347,8 +399,12 @@ void DisplayTimer()
             HandleInput(Result.TimerStopped);
             while (true)
             {
+                ResetColors();
                 Console.Clear();
-                Console.WriteLine($"Your time: {timer.GetTime()}");
+                Console.Write("Your time: ");
+                SetTextColor(ColorType.Time);
+                Console.WriteLine($"{timer.GetTime()}");
+                ResetColors();
                 ShowControlsAfterSolve();
 
                 result = GetInput(true);
@@ -378,6 +434,7 @@ void DisplayTimer()
 
 void ShowControls()
 {
+    SetTextColor(ColorType.Info);
     Console.WriteLine();
     Console.WriteLine("(?) Press ANY KEY to re-scramble");
     Console.WriteLine("(?) Press SPACEBAR to start timer");
@@ -386,15 +443,18 @@ void ShowControls()
     Console.WriteLine("(?) Press Delete to delete last solve");
     Console.WriteLine("(?) Press M to toggle animation");
     Console.WriteLine("(?) Press Q to quit");
+    ResetColors();
 }
 void ShowControlsAfterSolve()
 {
+    SetTextColor(ColorType.Info);
     Console.WriteLine();
     Console.WriteLine("(?) Press 2 to +2 penalty");
     Console.WriteLine("(?) Press D to DNF penalty");
     Console.WriteLine("(?) Press DELETE to delete this solve");
     Console.WriteLine("(?) Press Q to quit");
     Console.WriteLine("(?) Press ENTER to continue");
+    ResetColors();
 }
 
 void Quit()

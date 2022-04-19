@@ -2,6 +2,9 @@
 
 public class VisualCube
 {
+    ConsoleColor defaultFore;
+    ConsoleColor defaultBack;
+
     string scramble = "";
 
     int[,] whiteSide =
@@ -42,8 +45,11 @@ public class VisualCube
         };
     int[][,] cube = new int[6][,];
 
-    public VisualCube()
+    public VisualCube(ConsoleColor fore, ConsoleColor back)
     {
+        defaultFore = fore;
+        defaultBack = back;
+
         cube[0] = whiteSide;
         cube[1] = orangeSide;
         cube[2] = greenSide;
@@ -506,7 +512,8 @@ public class VisualCube
                 break;
         }
         Console.Write("██");
-        Console.ResetColor();
+        Console.ForegroundColor = defaultFore;
+        Console.BackgroundColor = defaultBack;
     }
 
     private void Reset()
