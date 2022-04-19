@@ -1,4 +1,4 @@
-﻿using System.Diagnostics;
+using System.Diagnostics;
 
 bool programCycle = true;
 
@@ -313,7 +313,7 @@ while (programCycle)
     Console.WriteLine("Scramble");
     scramble.GenerateScramble();
     cube.Scramble = scramble.GetScramble;
-    cube.DrawAndUpdate(doAnimation, 20, $"Scramble\n{scramble.GetScramble}\n");
+    cube.DrawUpdateAndResetAfter(doAnimation, 20, $"Scramble\n{cube.Scramble}\n");
     ShowControls();
 
     HandleInput(GetInput(true));
