@@ -1,4 +1,4 @@
-﻿using System.Diagnostics;
+using System.Diagnostics;
 
 public class VisualCube
 {
@@ -108,46 +108,9 @@ public class VisualCube
             }
             else if (modifier == '\'')
             {
-                #region top
-                int[] ca0 = { cube[0][0, 0], cube[0][0, 2], cube[0][2, 2], cube[0][2, 0] };
-                int[] ce0 = { cube[0][0, 1], cube[0][1, 2], cube[0][2, 1], cube[0][1, 0] };
-                // angles
-                cube[0][2, 0] = ca0[0];
-                cube[0][0, 0] = ca0[1];
-                cube[0][0, 2] = ca0[2];
-                cube[0][2, 2] = ca0[3];
-                // edges
-                cube[0][1, 0] = ce0[0];
-                cube[0][0, 1] = ce0[1];
-                cube[0][1, 2] = ce0[2];
-                cube[0][2, 1] = ce0[3];
-                #endregion
-                #region sides
-                for (int i = 0; i < 3; i++)
-                {
-                    int temp = cube[1][0, 2];
-                    // orange
-                    int[] c1 = { cube[1][0, 1], cube[1][0, 0], cube[5][2, 0] };
-                    cube[1][0, 2] = c1[0];
-                    cube[1][0, 1] = c1[1];
-                    cube[1][0, 0] = c1[2];
-                    // blue
-                    int[] c5 = { cube[5][2, 1], cube[5][2, 2], cube[3][0, 2] };
-                    cube[5][2, 0] = c5[0];
-                    cube[5][2, 1] = c5[1];
-                    cube[5][2, 2] = c5[2];
-                    // red
-                    int[] c3 = { cube[3][0, 1], cube[3][0, 0], cube[2][0, 2] };
-                    cube[3][0, 2] = c3[0];
-                    cube[3][0, 1] = c3[1];
-                    cube[3][0, 0] = c3[2];
-                    // green
-                    int[] c2 = { cube[2][0, 1], cube[2][0, 0], temp };
-                    cube[2][0, 2] = c2[0];
-                    cube[2][0, 1] = c2[1];
-                    cube[2][0, 0] = c2[2];
-                }
-                #endregion
+                Update('U', ' ');
+                Update('U', ' ');
+                Update('U', ' ');
             }
         }
         else if (scrambleChar == 'R')
@@ -202,46 +165,9 @@ public class VisualCube
             }
             else if (modifier == '\'')
             {
-                #region right
-                int[] ca3 = { cube[3][0, 0], cube[3][0, 2], cube[3][2, 2], cube[3][2, 0] };
-                int[] ce3 = { cube[3][0, 1], cube[3][1, 2], cube[3][2, 1], cube[3][1, 0] };
-                // angles
-                cube[3][2, 0] = ca3[0];
-                cube[3][0, 0] = ca3[1];
-                cube[3][0, 2] = ca3[2];
-                cube[3][2, 2] = ca3[3];
-                // edges
-                cube[3][1, 0] = ce3[0];
-                cube[3][0, 1] = ce3[1];
-                cube[3][1, 2] = ce3[2];
-                cube[3][2, 1] = ce3[3];
-                #endregion
-                #region sides
-                for (int i = 0; i < 3; i++)
-                {
-                    int temp = cube[0][2, 2];
-                    // white
-                    int[] c0 = { cube[0][1, 2], cube[0][0, 2], cube[5][2, 2] };
-                    cube[0][2, 2] = c0[0];
-                    cube[0][1, 2] = c0[1];
-                    cube[0][0, 2] = c0[2];
-                    // blue
-                    int[] c5 = { cube[5][1, 2], cube[5][0, 2], cube[4][2, 2] };
-                    cube[5][2, 2] = c5[0];
-                    cube[5][1, 2] = c5[1];
-                    cube[5][0, 2] = c5[2];
-                    // yellow
-                    int[] c4 = { cube[4][1, 2], cube[4][0, 2], cube[2][2, 2] };
-                    cube[4][2, 2] = c4[0];
-                    cube[4][1, 2] = c4[1];
-                    cube[4][0, 2] = c4[2];
-                    // green
-                    int[] c2 = { cube[2][1, 2], cube[2][0, 2], temp };
-                    cube[2][2, 2] = c2[0];
-                    cube[2][1, 2] = c2[1];
-                    cube[2][0, 2] = c2[2];
-                }
-                #endregion
+                Update('R', ' ');
+                Update('R', ' ');
+                Update('R', ' ');
             }
         }
         else if (scrambleChar == 'F')
@@ -296,46 +222,9 @@ public class VisualCube
             }
             else if (modifier == '\'')
             {
-                #region front
-                int[] ca2 = { cube[2][0, 0], cube[2][0, 2], cube[2][2, 2], cube[2][2, 0] };
-                int[] ce2 = { cube[2][0, 1], cube[2][1, 2], cube[2][2, 1], cube[2][1, 0] };
-                // angles
-                cube[2][2, 0] = ca2[0];
-                cube[2][0, 0] = ca2[1];
-                cube[2][0, 2] = ca2[2];
-                cube[2][2, 2] = ca2[3];
-                // edges
-                cube[2][1, 0] = ce2[0];
-                cube[2][0, 1] = ce2[1];
-                cube[2][1, 2] = ce2[2];
-                cube[2][2, 1] = ce2[3];
-                #endregion
-                #region sides
-                for (int i = 0; i < 3; i++)
-                {
-                    int temp = cube[0][2, 0];
-                    // white
-                    int[] c0 = { cube[0][2, 1], cube[0][2, 2], cube[3][0, 0] };
-                    cube[0][2, 0] = c0[0];
-                    cube[0][2, 1] = c0[1];
-                    cube[0][2, 2] = c0[2];
-                    // red
-                    int[] c3 = { cube[3][1, 0], cube[3][2, 0], cube[4][0, 2] };
-                    cube[3][0, 0] = c3[0];
-                    cube[3][1, 0] = c3[1];
-                    cube[3][2, 0] = c3[2];
-                    // yellow
-                    int[] c4 = { cube[4][0, 1], cube[4][0, 0], cube[1][2, 2] };
-                    cube[4][0, 2] = c4[0];
-                    cube[4][0, 1] = c4[1];
-                    cube[4][0, 0] = c4[2];
-                    // orange
-                    int[] c1 = { cube[1][1, 2], cube[1][0, 2], temp };
-                    cube[1][2, 2] = c1[0];
-                    cube[1][1, 2] = c1[1];
-                    cube[1][0, 2] = c1[2];
-                }
-                #endregion
+                Update('F', ' ');
+                Update('F', ' ');
+                Update('F', ' ');
             }
         }
         else if (scrambleChar == 'D')
@@ -390,46 +279,9 @@ public class VisualCube
             }
             else if (modifier == '\'')
             {
-                #region bottom
-                int[] ca4 = { cube[4][0, 0], cube[4][0, 2], cube[4][2, 2], cube[4][2, 0] };
-                int[] ce4 = { cube[4][0, 1], cube[4][1, 2], cube[4][2, 1], cube[4][1, 0] };
-                // angles
-                cube[4][2, 0] = ca4[0];
-                cube[4][0, 0] = ca4[1];
-                cube[4][0, 2] = ca4[2];
-                cube[4][2, 2] = ca4[3];
-                // edges
-                cube[4][1, 0] = ce4[0];
-                cube[4][0, 1] = ce4[1];
-                cube[4][1, 2] = ce4[2];
-                cube[4][2, 1] = ce4[3];
-                #endregion
-                #region sides
-                for (int i = 0; i < 3; i++)
-                {
-                    int temp = cube[1][2, 0];
-                    // orange
-                    int[] c1 = { cube[1][2, 1], cube[1][2, 2], cube[2][2, 0] };
-                    cube[1][2, 0] = c1[0];
-                    cube[1][2, 1] = c1[1];
-                    cube[1][2, 2] = c1[2];
-                    // green
-                    int[] c2 = { cube[2][2, 1], cube[2][2, 2], cube[3][2, 0] };
-                    cube[2][2, 0] = c2[0];
-                    cube[2][2, 1] = c2[1];
-                    cube[2][2, 2] = c2[2];
-                    // red
-                    int[] c3 = { cube[3][2, 1], cube[3][2, 2], cube[5][0, 2] };
-                    cube[3][2, 0] = c3[0];
-                    cube[3][2, 1] = c3[1];
-                    cube[3][2, 2] = c3[2];
-                    // blue
-                    int[] c5 = { cube[5][0, 1], cube[5][0, 0], temp };
-                    cube[5][0, 2] = c5[0];
-                    cube[5][0, 1] = c5[1];
-                    cube[5][0, 0] = c5[2];
-                }
-                #endregion
+                Update('D', ' ');
+                Update('D', ' ');
+                Update('D', ' ');
             }
         }
         else if (scrambleChar == 'L')
@@ -484,46 +336,9 @@ public class VisualCube
             }
             else if (modifier == '\'')
             {
-                #region left
-                int[] ca3 = { cube[1][0, 0], cube[1][0, 2], cube[1][2, 2], cube[1][2, 0] };
-                int[] ce3 = { cube[1][0, 1], cube[1][1, 2], cube[1][2, 1], cube[1][1, 0] };
-                // angles
-                cube[1][2, 0] = ca3[0];
-                cube[1][0, 0] = ca3[1];
-                cube[1][0, 2] = ca3[2];
-                cube[1][2, 2] = ca3[3];
-                // edges
-                cube[1][1, 0] = ce3[0];
-                cube[1][0, 1] = ce3[1];
-                cube[1][1, 2] = ce3[2];
-                cube[1][2, 1] = ce3[3];
-                #endregion
-                #region sides
-                for (int i = 0; i < 3; i++)
-                {
-                    int temp = cube[0][0, 0];
-                    // white
-                    int[] c0 = { cube[0][1, 0], cube[0][2, 0], cube[2][0, 0] };
-                    cube[0][0, 0] = c0[0];
-                    cube[0][1, 0] = c0[1];
-                    cube[0][2, 0] = c0[2];
-                    // green
-                    int[] c2 = { cube[2][1, 0], cube[2][2, 0], cube[4][0, 0] };
-                    cube[2][0, 0] = c2[0];
-                    cube[2][1, 0] = c2[1];
-                    cube[2][2, 0] = c2[2];
-                    // yellow
-                    int[] c4 = { cube[4][1, 0], cube[4][2, 0], cube[5][0, 0] };
-                    cube[4][0, 0] = c4[0];
-                    cube[4][1, 0] = c4[1];
-                    cube[4][2, 0] = c4[2];
-                    // blue
-                    int[] c5 = { cube[5][1, 0], cube[5][2, 0], temp };
-                    cube[5][0, 0] = c5[0];
-                    cube[5][1, 0] = c5[1];
-                    cube[5][2, 0] = c5[2];
-                }
-                #endregion
+                Update('L', ' ');
+                Update('L', ' ');
+                Update('L', ' ');
             }
         }
         else if (scrambleChar == 'B')
@@ -578,50 +393,13 @@ public class VisualCube
             }
             else if (modifier == '\'')
             {
-                #region back
-                int[] ca5 = { cube[5][0, 0], cube[5][0, 2], cube[5][2, 2], cube[5][2, 0] };
-                int[] ce5 = { cube[5][0, 1], cube[5][1, 2], cube[5][2, 1], cube[5][1, 0] };
-                // angles
-                cube[5][2, 0] = ca5[0];
-                cube[5][0, 0] = ca5[1];
-                cube[5][0, 2] = ca5[2];
-                cube[5][2, 2] = ca5[3];
-                // edges
-                cube[5][1, 0] = ce5[0];
-                cube[5][0, 1] = ce5[1];
-                cube[5][1, 2] = ce5[2];
-                cube[5][2, 1] = ce5[3];
-                #endregion
-                #region sides
-                for (int i = 0; i < 3; i++)
-                {
-                    int temp = cube[0][0, 2];
-                    // white
-                    int[] c0 = { cube[0][0, 1], cube[0][0, 0], cube[1][0, 0] };
-                    cube[0][0, 2] = c0[0];
-                    cube[0][0, 1] = c0[1];
-                    cube[0][0, 0] = c0[2];
-                    // orange
-                    int[] c1 = { cube[1][1, 0], cube[1][2, 0], cube[4][2, 0] };
-                    cube[1][0, 0] = c1[0];
-                    cube[1][1, 0] = c1[1];
-                    cube[1][2, 0] = c1[2];
-                    // yellow
-                    int[] c4 = { cube[4][2, 1], cube[4][2, 2], cube[3][2, 2] };
-                    cube[4][2, 0] = c4[0];
-                    cube[4][2, 1] = c4[1];
-                    cube[4][2, 2] = c4[2];
-                    // red
-                    int[] c3 = { cube[3][1, 2], cube[3][0, 2], temp };
-                    cube[3][2, 2] = c3[0];
-                    cube[3][1, 2] = c3[1];
-                    cube[3][0, 2] = c3[2];
-                }
-                #endregion
+                Update('B', ' ');
+                Update('B', ' ');
+                Update('B', ' ');
             }
         }
     }
-    
+
     public void Draw()
     {
         for (int i = 0; i < 6; i++)
