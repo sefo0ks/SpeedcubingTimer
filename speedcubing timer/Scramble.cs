@@ -5,7 +5,7 @@
     char[] scrambleSymbols = { 'R', 'L', 'U', 'D', 'F', 'B' };
     char[] modifiers = { '\'', '2' };
 
-    public string GenerateScramble()
+    public string Generate()
     {
         scramble = "";
         char prevChar = ' ';
@@ -39,10 +39,10 @@
         return scramble;
     }
 
-    public void ShowScramble()
+    public void Show()
     {
         if (scramble == "")
-            GenerateScramble();
+            Generate();
         Console.WriteLine(scramble);
     }
 

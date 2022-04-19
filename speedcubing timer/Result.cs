@@ -1,4 +1,4 @@
-public enum Result
+﻿public enum Result
 {
     Nothing,
     Continue,

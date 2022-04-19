@@ -1,4 +1,4 @@
-using System.Diagnostics;
+﻿using System.Diagnostics;
 
 bool programCycle = true;
 
@@ -33,7 +33,7 @@ void LoadSettings()
         string line;
         while ((line = sr.ReadLine()) != null)
         {
-            line = line.Replace($"{SettingsChange.Animation.ToString()}=", "");
+            line = line.Replace($"{Settings.Animation.ToString()}=", "");
             try
             {
                 doAnimation = bool.Parse(line);
@@ -181,15 +181,15 @@ void StopTimer()
     timer.StopAndGetTime();
 }
 
-void ChangeSetting(SettingsChange needToChange)
+void ChangeSetting(Settings needToChange)
 {
-    if (needToChange == SettingsChange.Animation)
+    if (needToChange == Settings.Animation)
         doAnimation = !doAnimation;
 
     File.Delete(settingsSavePath);
     using (StreamWriter sw = File.AppendText(settingsSavePath))
     {
-        sw.WriteLine($"{SettingsChange.Animation.ToString()}={doAnimation}");
+        sw.WriteLine($"{Settings.Animation.ToString()}={doAnimation}");
     }
 }
 Result GetInput(bool requireInput = false)
@@ -244,7 +244,7 @@ void HandleInput(Result input)
     else if (input == Result.ShowRecords)
         ShowRecords();
     else if (input == Result.ToggleAnimation)
-        ChangeSetting(SettingsChange.Animation);
+        ChangeSetting(Settings.Animation);
     else if (input == Result.Plus2 || input == Result.DNF || input == Result.NoPenalty)
         SaveSolve(input);
 
@@ -410,7 +410,7 @@ while (programCycle)
 {
     Console.Clear();
     Console.WriteLine("Scramble");
-    scramble.GenerateScramble();
+    scramble.Generate();
     cube.Scramble = scramble.GetScramble;
     cube.DrawUpdateAndResetAfter(doAnimation, 20, $"Scramble\n{cube.Scramble}\n");
     ShowControls();
