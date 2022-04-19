@@ -1,4 +1,4 @@
-using System.Diagnostics;
+﻿using System.Diagnostics;
 
 public class VisualCube
 {
@@ -430,7 +430,7 @@ public class VisualCube
         }
     }
 
-    public void DrawUpdateAndResetAfter(bool animate, int intervalInMilliseconds = 150, string savedTextBeforeImage = "")
+    public void DrawUpdateAndResetAfter(bool animate, int intervalInMilliseconds = 40, string savedTextBeforeImage = "")
     {
         if (String.IsNullOrWhiteSpace(scramble))
             return;

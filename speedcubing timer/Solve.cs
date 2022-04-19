@@ -1,8 +1,9 @@
-public class Solve
+﻿public class Solve
 {
     double time;
-    string scramble, savePath;
+    string scramble, penalty = "", savePath;
     DateTime date;
+    Result penaltyResult;
 
     public Solve(double time, string scramble, DateTime date)
     {
@@ -13,13 +14,28 @@ public class Solve
         savePath = @$"{Environment.CurrentDirectory}\Data\";
     }
 
+    public void SetPenalty(Result penalty)
+    {
+        if (penalty == Result.Plus2)
+            this.penalty = $"(+2)";
+        else if (penalty == Result.DNF)
+            this.penalty = $"(DNF)";
+        else if (penalty == Result.NoPenalty)
+            this.penalty = "(ok)";
+        else
+            return;
+
+        penaltyResult = penalty;
+    }
+
     public void Show()
     {
         if (time > 60)
         {
             int minutes = (int)time / 60;
-            Console.Write($"{minutes}min {Math.Round(time % 60, 3)}sec | {scramble}| " +
+            Console.Write($"{minutes}min {Math.Round(time % 60, 3)}sec | {penalty} | {scramble}| " +
                 $"{date.Day}.{date.Month}.{date.Year} ");
+
             if (date.Hour < 10)
                 Console.Write($"0{date.Hour}:");
             else
@@ -28,9 +44,10 @@ public class Solve
                 Console.Write($"0{date.Minute}");
             else
                 Console.Write($"{date.Minute}");
-        } else
+        } 
+        else
         {
-            Console.Write($"{time}sec | {scramble} | " +
+            Console.Write($"{time}sec | {penalty} | {scramble} | " +
                 $"{date.Day}.{date.Month}.{date.Year} ");
 
             if (date.Hour < 10)
@@ -50,7 +67,7 @@ public class Solve
         if (time > 60)
         {
             int minutes = (int)time / 60;
-            Console.Write($"Time: {minutes}min {Math.Round(time % 60, 3)}sec | Scrumble: {scramble} | " +
+            Console.Write($"Time: {minutes}min {Math.Round(time % 60, 3)}sec | {penalty} | Scrumble: {scramble} | " +
                 $"Date: {date.Day}.{date.Month}.{date.Year} ");
 
             if (date.Hour < 10)
@@ -63,7 +80,7 @@ public class Solve
                 Console.Write($"{date.Minute}");
         } else
         {
-            Console.Write($"Time: {time}sec | Scrumble: {scramble} | " +
+            Console.Write($"Time: {time}sec | {penalty} | Scrumble: {scramble} | " +
                 $"Date: {date.Day}.{date.Month}.{date.Year} ");
 
             if (date.Hour < 10)
@@ -85,12 +102,12 @@ public class Solve
 
         using (StreamWriter sw = File.AppendText(savePath + "solves.txt"))
         {
-            sw.WriteLine($"{Math.Round(time, 3)}|{scramble}|{date}|");
+            sw.WriteLine($"{Math.Round(time, 3)}|{penalty}|{scramble}|{date}|");
         }
     }
 
     public double Time { get => time; }
     public string Scramble { get => scramble; }
     public DateTime Date { get => date; }
-
+    public Result PenaltyResult { get => penaltyResult; }
 }

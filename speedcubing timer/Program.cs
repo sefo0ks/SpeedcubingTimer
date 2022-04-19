@@ -1,4 +1,4 @@
-using System.Diagnostics;
+﻿using System.Diagnostics;
 
 bool programCycle = true;
 
@@ -61,7 +61,7 @@ void ReadFromSavedSolves()
         while ((line = sr.ReadLine()) != null)
         {
             double time;
-            string scramble = "";
+            string scramble = "", penalty = "";
             DateTime date;
 
             string temp = "";
@@ -85,6 +85,19 @@ void ReadFromSavedSolves()
                 if (ch == '|')
                     stickCount++;
                 if (stickCount == 1)
+                    temp += ch;
+            }
+            penalty = temp.Remove(0, 1);
+            temp = "";
+            stickCount = 0;
+
+            foreach (char ch in line)
+            {
+                if (ch == '|')
+                    stickCount++;
+                if (stickCount == 3)
+                    break;
+                if (stickCount == 2)
                     scramble += ch;
             }
             scramble = scramble.Remove(0, 1);
@@ -92,23 +105,43 @@ void ReadFromSavedSolves()
 
             foreach (char ch in line)
             {
-                if (stickCount == 3)
-                    break;
                 if (ch == '|')
                     stickCount++;
-                if (stickCount == 2)
+                if (stickCount == 4)
+                    break;
+                if (stickCount == 3)
                     temp += ch;
             }
             date = Convert.ToDateTime(temp.Remove(0, 1));
             temp = "";
             stickCount = 0;
 
-            allSolves.Add(new Solve(time, scramble, date));
+            Solve solveToLoad = new Solve(time, scramble, date);
+            switch (penalty)
+            {
+                case "(+2)":
+                    solveToLoad.SetPenalty(Result.Plus2);
+                    break;
+                case "(DNF)":
+                    solveToLoad.SetPenalty(Result.DNF);
+                    break;
+                default:
+                    solveToLoad.SetPenalty(Result.NoPenalty);
+                    break;
+            }
+            allSolves.Add(solveToLoad);
         }
     }
 }
 void DeleteLastSolve()
 {
+    ReadFromSavedSolves();
+    Console.Clear();
+    if (allSolves.Count > 0)
+        Console.WriteLine("Your last solve was deleted.");
+    else
+        Console.WriteLine("No solves to delete.");
+
     string tempFile = Path.GetTempFileName();
 
     using (var sr = new StreamReader(solvesSavePath))
@@ -131,12 +164,19 @@ void DeleteLastSolve()
     File.Move(tempFile, solvesSavePath);
 
     ReadFromSavedSolves();
+
+    Console.ReadKey();
 }
-void SaveSolveAndStopTimer()
+void SaveSolve(Result penalty)
+{
+    Solve solveToSave = new Solve(timer.GetDoubleTime(), scramble.GetScramble, DateTime.Now);
+    solveToSave.SetPenalty(penalty);
+    solveToSave.Save();
+    ReadFromSavedSolves();
+}
+void StopTimer()
 {
     timer.StopAndGetTime();
-    new Solve(timer.GetDoubleTime(), scramble.GetScramble, DateTime.Now).Save();
-    ReadFromSavedSolves();
 }
 
 void ChangeSetting(SettingsChange needToChange)
@@ -161,7 +201,7 @@ Result GetInput(bool requireInput = false)
         return Result.TimerStopped;
     else if (inputKey == ConsoleKey.Q)
         return Result.Quit;
-    else if (inputKey == ConsoleKey.D)
+    else if (inputKey == ConsoleKey.Delete)
         return Result.SolveDeleted;
     else if (!timer.OnGoing && inputKey == ConsoleKey.Spacebar)
         return Result.TimerStarted;
@@ -175,6 +215,10 @@ Result GetInput(bool requireInput = false)
         return Result.Previous;
     else if (inputKey == ConsoleKey.M)
         return Result.ToggleAnimation;
+    else if (inputKey == ConsoleKey.D2)
+        return Result.Plus2;
+    else if (inputKey == ConsoleKey.D)
+        return Result.DNF;
 
     return Result.Nothing;
 }
@@ -188,13 +232,15 @@ void HandleInput(Result input)
     else if (input == Result.TimerStarted)
         timer.Start();
     else if (input == Result.TimerStopped)
-        SaveSolveAndStopTimer();
+        StopTimer();
     else if (input == Result.SolveDeleted)
         DeleteLastSolve();
     else if (input == Result.ShowAllSolves)
         ShowAllSolves();
     else if (input == Result.ToggleAnimation)
         ChangeSetting(SettingsChange.Animation);
+    else if (input == Result.Plus2 || input == Result.DNF || input == Result.NoPenalty)
+        SaveSolve(input);
 
     return;
 }
@@ -268,11 +314,21 @@ void DisplayTimer()
                 result = GetInput(true);
                 if (result == Result.Continue ||
                     result == Result.SolveDeleted ||
-                    result == Result.Quit)
+                    result == Result.Quit ||
+                    result == Result.Plus2 ||
+                    result == Result.DNF)
                     break;
             }
 
-            HandleInput(result);
+            if (result == Result.Continue)
+                HandleInput(Result.NoPenalty);
+            else if (result == Result.SolveDeleted)
+            {
+                HandleInput(Result.NoPenalty);
+                HandleInput(result);
+            }
+            else
+                HandleInput(result);
             Console.Clear();
             return;
         }
@@ -286,14 +342,16 @@ void ShowControls()
     Console.WriteLine("(?) Press ANY KEY to re-scramble");
     Console.WriteLine("(?) Press SPACEBAR to start timer");
     Console.WriteLine("(?) Press A to see all solves");
-    Console.WriteLine("(?) Press D to delete last solve");
+    Console.WriteLine("(?) Press Delete to delete last solve");
     Console.WriteLine("(?) Press M to toggle animation");
     Console.WriteLine("(?) Press Q to quit");
 }
 void ShowControlsAfterSolve()
 {
     Console.WriteLine();
-    Console.WriteLine("(?) Press D to delete last solve");
+    Console.WriteLine("(?) Press 2 to +2 penalty");
+    Console.WriteLine("(?) Press D to DNF penalty");
+    Console.WriteLine("(?) Press DELETE to delete this solve");
     Console.WriteLine("(?) Press Q to quit");
     Console.WriteLine("(?) Press ENTER to continue");
 }
