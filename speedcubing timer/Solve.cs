@@ -4,6 +4,7 @@
     string scramble, penalty = "", savePath;
     DateTime date;
     Result penaltyResult;
+    bool dnf, plus2;
 
     public Solve(double time, string scramble, DateTime date)
     {
@@ -11,15 +12,46 @@
         this.scramble = scramble;
         this.date = date;
 
+        dnf = false;
+        plus2 = false;
+
         savePath = @$"{Environment.CurrentDirectory}\Data\";
     }
 
     public void SetPenalty(Result penalty)
     {
-        if (penalty == Result.Plus2)
+        if (penalty == Result.Plus2 && !plus2)
+        {
+            plus2 = true;
+            time += 2;
+            time = Math.Round(time, 3);
             this.penalty = $"(+2)";
-        else if (penalty == Result.DNF)
+        }
+        else if (penalty == Result.DNF && !dnf)
+        {
+            dnf = true;
             this.penalty = $"(DNF)";
+        }
+        else if (penalty == Result.NoPenalty)
+            this.penalty = "(ok)";
+        else
+            return;
+
+        penaltyResult = penalty;
+    }
+
+    public void GetPenalty(Result penalty)
+    {
+        if (penalty == Result.Plus2 && !plus2)
+        {
+            plus2 = true;
+            this.penalty = $"(+2)";
+        }
+        else if (penalty == Result.DNF && !dnf)
+        {
+            dnf = true;
+            this.penalty = $"(DNF)";
+        }
         else if (penalty == Result.NoPenalty)
             this.penalty = "(ok)";
         else
@@ -30,36 +62,37 @@
 
     public void Show()
     {
+        string toShow = "";
         if (time > 60)
         {
             int minutes = (int)time / 60;
-            Console.Write($"{minutes}min {Math.Round(time % 60, 3)}sec | {penalty} | {scramble}| " +
-                $"{date.Day}.{date.Month}.{date.Year} ");
+            toShow = $"{minutes}min {Math.Round(time % 60, 3)}sec | {penalty} | {scramble}| " +
+                $"{date.Day}.{date.Month}.{date.Year} ";
 
             if (date.Hour < 10)
-                Console.Write($"0{date.Hour}:");
+                toShow += $"0{date.Hour}:";
             else
-                Console.Write($"{date.Hour}:");
+                toShow += $"{date.Hour}:";
             if (date.Minute < 10)
-                Console.Write($"0{date.Minute}");
+                toShow += $"0{date.Minute}";
             else
-                Console.Write($"{date.Minute}");
+                toShow += $"{date.Minute}";
         } 
         else
         {
-            Console.Write($"{time}sec | {penalty} | {scramble} | " +
-                $"{date.Day}.{date.Month}.{date.Year} ");
+            toShow = $"{time}sec | {penalty} | {scramble} | " +
+                $"{date.Day}.{date.Month}.{date.Year} ";
 
             if (date.Hour < 10)
-                Console.Write($"0{date.Hour}:");
+                toShow += $"0{date.Hour}:";
             else
-                Console.Write($"{date.Hour}:");
+                toShow += $"{date.Hour}:";
             if (date.Minute < 10)
-                Console.Write($"0{date.Minute}");
+                toShow += $"0{date.Minute}";
             else
-                Console.Write($"{date.Minute}");
+                toShow += $"{date.Minute}";
         }
-        Console.WriteLine();
+        Console.WriteLine(toShow);
     }
 
     public void ShowWithMoreText()
