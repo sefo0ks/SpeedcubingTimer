@@ -412,6 +412,10 @@ public class VisualCube
         {
             for (int j = 0; j < 3; j++)
             {
+                for (int p = 0; p < Console.BufferWidth / 2 - "      ██████".Length; p++)
+                {
+                    Console.Write(" ");
+                }
                 if (i != 1)
                     Console.Write("      ");
                 for (int k = 0; k < 3; k++)

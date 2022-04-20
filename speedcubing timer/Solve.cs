@@ -143,4 +143,6 @@
     public string Scramble { get => scramble; }
     public DateTime Date { get => date; }
     public Result PenaltyResult { get => penaltyResult; }
+    public bool DNF { get => dnf; }
+    public bool Plus2 { get => plus2; }
 }

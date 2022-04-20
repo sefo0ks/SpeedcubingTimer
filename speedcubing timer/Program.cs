@@ -6,9 +6,8 @@ Console.ForegroundColor = defaultFore;
 Console.BackgroundColor = defaultBack;
 Console.Title = "Speedcubing Timer";
 Console.CursorVisible = false;
-
-int wHeight = 66,
-    wWidth = 24;
+int wHeight = Console.WindowHeight,
+    wWidth = Console.WindowWidth;
 bool programCycle = true;
 
 List<Solve> allSolves = new List<Solve>();
@@ -171,27 +170,31 @@ void ReadFromSavedSolves()
         }
     }
 }
-void DeleteLastSolve()
+void DeleteLastSolve() 
 {
-    wHeight = 7;
-    Console.SetWindowSize(wWidth, wHeight);
-    Console.SetBufferSize(wWidth, wHeight);
-
     ReadFromSavedSolves();
     Console.Clear();
+    MakeGap("height", wHeight / 2);
     if (allSolves.Count > 0)
     {
         MakeGap("height", 1);
         MakeGap("width", wWidth / 2 - "Your last solve was deleted.".Length / 2);
-        Console.WriteLine("Your last solve was deleted.");
+        Console.Write("Your last solve was ");
+        SetTextColor(ColorType.Info);
+        Console.Write("deleted");
+        ResetColors();
+        Console.WriteLine(".");
     }
     else
     {
         MakeGap("width", wWidth / 2 - "No solves to delete.".Length / 2);
-        Console.WriteLine("No solves to delete.");
+        SetTextColor(ColorType.Info);
+        Console.Write("No solves");
+        ResetColors();
+        Console.WriteLine(" to delete.");
     }
 
-    MakeGap("height", wHeight - 4);
+    MakeGap("height", 2);
     SetTextColor(ColorType.Info);
     Console.WriteLine($"(?) Press ANY KEY to get back");
     ResetColors();
@@ -305,11 +308,6 @@ void HandleInput(Result input)
 
 void ShowAllSolves()
 {
-    wWidth = 105;
-    wHeight = 21;
-    Console.SetWindowSize(wWidth, wHeight);
-    Console.SetBufferSize(wWidth, wHeight);
-
     int solvesPerPage = 15;
     int pageIndex = 0;
     int maxPage = (int)allSolves.Count / 15;
@@ -335,7 +333,8 @@ void ShowAllSolves()
                 allSolves[i].Show();
             }
         }
-        Console.WriteLine();
+
+        MakeGap("height", 3);
         SetTextColor(ColorType.Info);
         if (pageIndex < maxPage)
             Console.WriteLine("(?) Press -> to go to next page");
@@ -365,16 +364,12 @@ void ShowAllSolves()
 }
 void ShowRecords()
 {
-    wWidth = 50;
-    wHeight = 9;
-    Console.SetWindowSize(wWidth, wHeight);
-    Console.SetBufferSize(wWidth, wHeight);
-
     Console.Clear();
     MakeGap("width", wWidth / 2 - "Your Records:".Length / 2);
     Console.WriteLine("Your Records:");
     double bestTime = Int32.MaxValue,
         avgTime =0, avgTime5 = 0;
+    bool dnfAvg5 = false;
     string bestTimeStr = "",
         avgTimeStr = "", avgTime5Str = "";
 
@@ -386,7 +381,12 @@ void ShowRecords()
         avgTime += allSolves[i].Time;
 
         if (i > allSolves.Count - 6)
-            avgTime5 += allSolves[i].Time;
+        {
+            if (allSolves[i].DNF)
+                dnfAvg5 = true;
+            else
+                avgTime5 += allSolves[i].Time;
+        }
 
         if (i == allSolves.Count - 1)
         {
@@ -413,6 +413,9 @@ void ShowRecords()
     else
         avgTime5Str = $"{avgTime5}s";
 
+    if (dnfAvg5)
+        avgTime5Str = "(DNF)";
+
     MakeGap("width", wWidth / 2 - ("Best time - ".Length + bestTimeStr.Length) / 2);
     Console.Write("Best time - ");
     SetTextColor(ColorType.Time);
@@ -430,7 +433,7 @@ void ShowRecords()
     SetTextColor(ColorType.Time);
     Console.WriteLine(avgTime5Str);
 
-    MakeGap("height", wHeight - 6);
+    MakeGap("height", 3);
     SetTextColor(ColorType.Info);
     Console.WriteLine($"(?) Press ANY KEY to get back");
 
@@ -439,11 +442,6 @@ void ShowRecords()
 }
 void DisplayTimer()
 {
-    wWidth = 80;
-    wHeight = 20;
-    Console.SetWindowSize(wWidth, wHeight);
-    Console.SetBufferSize(wWidth, wHeight);
-
     Console.Clear();
     SetTextColor(ColorType.Time);
     MakeGap("height", wHeight / 2);
@@ -462,14 +460,14 @@ void DisplayTimer()
             {
                 ResetColors();
                 Console.Clear();
-                MakeGap("height", wHeight - 9);
+                MakeGap("height", wHeight / 2 - 1);
                 MakeGap("width", wWidth / 2 - "Your time:".Length / 2);
                 Console.WriteLine("Your time:");
                 SetTextColor(ColorType.Time);
                 MakeGap("width", wWidth / 2 - timer.GetTime().Length / 2);
                 Console.WriteLine($"{timer.GetTime()}");
                 ResetColors();
-                MakeGap("height", wHeight - 16);
+                MakeGap("height", 3);
                 ShowControlsAfterSolve();
 
                 result = GetInput(true);
@@ -533,15 +531,30 @@ void Quit()
 OnLoad();
 while (programCycle)
 {
-    wWidth = 66;
-    wHeight = 24;
-    Console.SetWindowSize(wWidth, wHeight);
-    Console.SetBufferSize(wWidth, wHeight);
+    wHeight = Console.WindowHeight;
+    wWidth = Console.WindowWidth;
+    if (wWidth < 66)
+    {
+        wWidth = 66;
+        Console.WindowWidth = wWidth;
+    }
+    if (wHeight < 24)
+    {
+        wHeight = 24;
+        Console.WindowHeight = wHeight;
+    }
     Console.Clear();
-    Console.WriteLine("Scramble");
     scramble.Generate();
     cube.Scramble = scramble.GetScramble;
-    cube.DrawUpdateAndResetAfter(doAnimation, 20, $"Scramble\n{cube.Scramble}\n");
+    string saveText = "";
+    for (int j = 0; j < Console.WindowWidth / 2 - "Scramble".Length / 2; j++)
+        saveText += (" ");
+    saveText += $"Scramble\n";
+    for (int j = 0; j < Console.WindowWidth / 2 - cube.Scramble.Length / 2; j++)
+        saveText += (" ");
+    saveText += cube.Scramble + "\n";
+    cube.DrawUpdateAndResetAfter(doAnimation, 20, saveText);
+    MakeGap("height", 3);
     ShowControls();
 
     HandleInput(GetInput(true));
