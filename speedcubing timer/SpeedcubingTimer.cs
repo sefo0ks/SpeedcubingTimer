@@ -3,7 +3,7 @@
 public class SpeedcubingTimer
 {
     bool onGoing = false;
-    double second, milliSeconds;
+    double minutes, seconds, milliSeconds;
     Stopwatch stopWatch = new Stopwatch();
 
     public void Start()
@@ -14,28 +14,38 @@ public class SpeedcubingTimer
 
     public string GetTime()
     {
-        second = stopWatch.Elapsed.Seconds;
+        minutes = stopWatch.Elapsed.Minutes;
+        seconds = stopWatch.Elapsed.Seconds;
         milliSeconds = stopWatch.Elapsed.Milliseconds;
 
-        return $"{second},{milliSeconds}s";
+        seconds += minutes * 60;
+
+        return $"{seconds},{milliSeconds}s";
     }
 
     public double GetDoubleTime()
     {
-        second = stopWatch.Elapsed.Seconds;
+        minutes = stopWatch.Elapsed.Minutes;
+        seconds = stopWatch.Elapsed.Seconds;
         milliSeconds = stopWatch.Elapsed.Milliseconds;
 
-        return second + (milliSeconds / 1000);
+        seconds += minutes * 60;
+
+        return seconds + (milliSeconds / 1000);
     }
 
     public string StopAndGetTime()
     {
-        second = stopWatch.Elapsed.Seconds;
+        minutes = stopWatch.Elapsed.Minutes;
+        seconds = stopWatch.Elapsed.Seconds;
         milliSeconds = stopWatch.Elapsed.Milliseconds;
+
+        seconds += minutes * 60;
+
         stopWatch.Stop();
         onGoing = false;
 
-        return $"{second},{milliSeconds}s";
+        return $"{seconds},{milliSeconds}s";
     }
 
     public bool OnGoing { get => onGoing; }
