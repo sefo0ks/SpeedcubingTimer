@@ -231,10 +231,6 @@ void SaveSolve(Result penalty)
     solveToSave.Save();
     ReadFromSavedSolves();
 }
-void StopTimer()
-{
-    timer.StopAndGetTime();
-}
 
 void ChangeSetting(Settings needToChange)
 {
@@ -256,28 +252,38 @@ Result GetInput(bool requireInput = false)
 
     if (timer.OnGoing)
         return Result.TimerStopped;
-    else if (inputKey == ConsoleKey.Q)
-        return Result.Quit;
-    else if (inputKey == ConsoleKey.Delete)
-        return Result.SolveDeleted;
-    else if (!timer.OnGoing && inputKey == ConsoleKey.Spacebar)
-        return Result.TimerStarted;
-    else if (inputKey == ConsoleKey.Enter)
-        return Result.Continue;
-    else if (inputKey == ConsoleKey.A)
-        return Result.ShowAllSolves;
-    else if (inputKey == ConsoleKey.R)
-        return Result.ShowRecords;
-    else if (inputKey == ConsoleKey.RightArrow)
-        return Result.Next;
-    else if (inputKey == ConsoleKey.LeftArrow)
-        return Result.Previous;
-    else if (inputKey == ConsoleKey.M)
-        return Result.ToggleAnimation;
-    else if (inputKey == ConsoleKey.D2)
-        return Result.Plus2;
-    else if (inputKey == ConsoleKey.D)
-        return Result.DNF;
+
+    switch (inputKey)
+    {
+        case ConsoleKey.Q:
+            return Result.Quit;
+        case ConsoleKey.Delete:
+            return Result.SolveDeleted;
+        case ConsoleKey.Spacebar:
+            if (!timer.OnGoing)
+                return Result.TimerStarted;
+            break;
+        case ConsoleKey.Enter:
+            return Result.Continue;
+        case ConsoleKey.A:
+            return Result.ShowAllSolves;
+        case ConsoleKey.R:
+            return Result.ShowRecords;
+        case ConsoleKey.RightArrow:
+            return Result.Next;
+        case ConsoleKey.LeftArrow:
+            return Result.Previous;
+        case ConsoleKey.M:
+            return Result.ToggleAnimation;
+        case ConsoleKey.D2:
+            return Result.Plus2;
+        case ConsoleKey.D:
+            return Result.DNF;
+        case ConsoleKey.F:
+            return Result.First;
+        case ConsoleKey.L:
+            return Result.Last;
+    }
 
     return Result.Nothing;
 }
@@ -286,31 +292,40 @@ void HandleInput(Result input)
     if (input == Result.Nothing)
         return;
 
-    if (input == Result.Quit)
-        Quit();
-    else if (input == Result.TimerStarted)
-        timer.Start();
-    else if (input == Result.TimerStopped)
-        StopTimer();
-    else if (input == Result.SolveDeleted)
-        DeleteLastSolve();
-    else if (input == Result.ShowAllSolves)
-        ShowAllSolves();
-    else if (input == Result.ShowRecords)
-        ShowRecords();
-    else if (input == Result.ToggleAnimation)
-        ChangeSetting(Settings.Animation);
-    else if (input == Result.Plus2 || input == Result.DNF || input == Result.NoPenalty)
-        SaveSolve(input);
-
-    return;
+    switch (input)
+    {
+        case Result.Quit:
+            Quit();
+            break;
+        case Result.TimerStarted:
+            timer.Start();
+            break;
+        case Result.TimerStopped:
+            timer.StopAndGetTime();
+            break;
+        case Result.SolveDeleted:
+            DeleteLastSolve();
+            break;
+        case Result.ShowAllSolves:
+            ShowAllSolves();
+            break;
+        case Result.ShowRecords:
+            ShowRecords();
+            break;
+        case Result.ToggleAnimation:
+            ChangeSetting(Settings.Animation);
+            break;
+        case Result.Plus2 or Result.DNF or Result.NoPenalty:
+            SaveSolve(input);
+            break;
+    }
 }
 
 void ShowAllSolves()
 {
     int solvesPerPage = 15;
     int pageIndex = 0;
-    int maxPage = (int)allSolves.Count / 15;
+    int maxPage = (int)((allSolves.Count - 1) / 15);
     int solveStartIndexOnPage;
 
     do
@@ -341,6 +356,8 @@ void ShowAllSolves()
         if (pageIndex > 0)
             Console.WriteLine("(?) Press <- to go to previous page");
         Console.WriteLine("(?) Press ENTER to get back");
+        Console.WriteLine("(?) Press F to go to first page");
+        Console.WriteLine("(?) Press L to go to last page");
         Console.WriteLine("(?) Press DELETE to delete last solve");
         ResetColors();
 
@@ -351,6 +368,12 @@ void ShowAllSolves()
             case Result.SolveDeleted:
                 DeleteLastSolve();
                 break;
+            case Result.First:
+                pageIndex = 0;
+                break;
+            case Result.Last:
+                pageIndex = maxPage;
+                break;
             case Result.Next:
                 if (pageIndex < maxPage)
                     pageIndex++;
@@ -360,6 +383,9 @@ void ShowAllSolves()
                     pageIndex--;
                 break;
         }
+        maxPage = (int)((allSolves.Count - 1) / 15);
+        if (pageIndex > maxPage)
+            pageIndex = maxPage;
     } while (true);
 }
 void ShowRecords()

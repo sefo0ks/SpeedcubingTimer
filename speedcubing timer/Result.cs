@@ -3,6 +3,8 @@
     Nothing,
     Continue,
     Next,
+    First,
+    Last,
     Previous,
     NoPenalty,
     Plus2,
