@@ -6,14 +6,13 @@ Console.ForegroundColor = defaultFore;
 Console.BackgroundColor = defaultBack;
 Console.Title = "Speedcubing Timer";
 Console.CursorVisible = false;
-int wHeight = Console.WindowHeight,
-    wWidth = Console.WindowWidth;
+int windowHeight, windowWidth;
 bool programCycle = true;
 
-List<Solve> allSolves = new List<Solve>();
-Scramble scramble = new Scramble();
-SpeedcubingTimer timer = new SpeedcubingTimer();
-VisualCube cube = new VisualCube(defaultFore, defaultBack);
+List<Solve> allSolves = new();
+Scramble scramble = new();
+SpeedcubingTimer timer = new();
+VisualCube cube = new(defaultFore, defaultBack);
 bool doAnimation = false;
 
 string savePath = @$"{Environment.CurrentDirectory}\Data";
@@ -36,12 +35,12 @@ void LoadSettings()
 {
     bool fail = false;
 
-    using (StreamReader sr = new StreamReader(settingsSavePath))
+    using (StreamReader sr = new(settingsSavePath))
     {
         string line;
         while ((line = sr.ReadLine()) != null)
         {
-            line = line.Replace($"{Settings.Animation.ToString()}=", "");
+            line = line.Replace($"{Settings.Animation}=", "");
             try
             {
                 doAnimation = bool.Parse(line);
@@ -92,7 +91,7 @@ void MakeGap(string heightOrwidth, int value)
 void ReadFromSavedSolves()
 {
     allSolves.Clear();
-    using (StreamReader sr = new StreamReader(solvesSavePath))
+    using (StreamReader sr = new(solvesSavePath))
     {
         string line;
         while ((line = sr.ReadLine()) != null)
@@ -153,7 +152,7 @@ void ReadFromSavedSolves()
             temp = "";
             stickCount = 0;
 
-            Solve solveToLoad = new Solve(time, scramble, date);
+            Solve solveToLoad = new(time, scramble, date);
             switch (penalty)
             {
                 case "(+2)":
@@ -174,11 +173,11 @@ void DeleteLastSolve()
 {
     ReadFromSavedSolves();
     Console.Clear();
-    MakeGap("height", wHeight / 2);
+    MakeGap("height", windowHeight / 2);
     if (allSolves.Count > 0)
     {
         MakeGap("height", 1);
-        MakeGap("width", wWidth / 2 - "Your last solve was deleted.".Length / 2);
+        MakeGap("width", windowWidth / 2 - "Your last solve was deleted.".Length / 2);
         Console.Write("Your last solve was ");
         SetTextColor(ColorType.Info);
         Console.Write("deleted");
@@ -187,7 +186,7 @@ void DeleteLastSolve()
     }
     else
     {
-        MakeGap("width", wWidth / 2 - "No solves to delete.".Length / 2);
+        MakeGap("width", windowWidth / 2 - "No solves to delete.".Length / 2);
         SetTextColor(ColorType.Info);
         Console.Write("No solves");
         ResetColors();
@@ -226,7 +225,7 @@ void DeleteLastSolve()
 }
 void SaveSolve(Result penalty)
 {
-    Solve solveToSave = new Solve(timer.GetDoubleTime(), scramble.GetScramble, DateTime.Now);
+    Solve solveToSave = new(timer.GetDoubleTime(), scramble.GetScramble, DateTime.Now);
     solveToSave.SetPenalty(penalty);
     solveToSave.Save();
     ReadFromSavedSolves();
@@ -240,7 +239,7 @@ void ChangeSetting(Settings needToChange)
     File.Delete(settingsSavePath);
     using (StreamWriter sw = File.AppendText(settingsSavePath))
     {
-        sw.WriteLine($"{Settings.Animation.ToString()}={doAnimation}");
+        sw.WriteLine($"{Settings.Animation}={doAnimation}");
     }
 }
 Result GetInput(bool requireInput = false)
@@ -391,13 +390,15 @@ void ShowAllSolves()
 void ShowRecords()
 {
     Console.Clear();
-    MakeGap("width", wWidth / 2 - "Your Records:".Length / 2);
+    MakeGap("width", windowWidth / 2 - "Your Records:".Length / 2);
     Console.WriteLine("Your Records:");
     double bestTime = Int32.MaxValue,
-        avgTime =0, avgTime5 = 0;
+        avgTime = 0, avgTime5 = 0, meanTime5 = 0;
     bool dnfAvg5 = false;
-    string bestTimeStr = "",
-        avgTimeStr = "", avgTime5Str = "";
+    string bestTimeStr,
+        avgTimeStr, avgTime5Str, meanTime5Str;
+    List<double> last5 = new();
+
 
     for (int i = 0; i < allSolves.Count; i++)
     {
@@ -406,23 +407,34 @@ void ShowRecords()
 
         avgTime += allSolves[i].Time;
 
-        if (i > allSolves.Count - 6)
+        if (dnfAvg5 == false && i > allSolves.Count - 6)
         {
             if (allSolves[i].DNF)
+            {
+                last5.Clear();
                 dnfAvg5 = true;
+            }
             else
-                avgTime5 += allSolves[i].Time;
-        }
-
-        if (i == allSolves.Count - 1)
-        {
-            avgTime /= allSolves.Count;
-            avgTime5 /= 5;
-
-            avgTime = Math.Round(avgTime, 3);
-            avgTime5 = Math.Round(avgTime5, 3);
+                last5.Add(allSolves[i].Time);
         }
     }
+
+    avgTime /= allSolves.Count;
+    if (last5 is not null)
+        foreach (var time in last5)
+        {
+            meanTime5 += time;
+            if (time != last5.Min() && time != last5.Max())
+                avgTime5 += time;
+        }
+
+    avgTime5 /= 3;
+    meanTime5 /= 5;
+
+    avgTime = Math.Round(avgTime, 3);
+    avgTime5 = Math.Round(avgTime5, 3);
+    meanTime5 = Math.Round(meanTime5, 3);
+
 
     if (bestTime > 60)
         bestTimeStr = $"{(int)bestTime / 60}m {Math.Round(bestTime % 60, 3)}s";
@@ -439,25 +451,39 @@ void ShowRecords()
     else
         avgTime5Str = $"{avgTime5}s";
 
-    if (dnfAvg5)
-        avgTime5Str = "(DNF)";
+    if (meanTime5 > 60)
+        meanTime5Str = $"{(int)meanTime5 / 60}m {Math.Round(meanTime5 % 60, 3)}s";
+    else
+        meanTime5Str = $"{meanTime5}s";
 
-    MakeGap("width", wWidth / 2 - ("Best time - ".Length + bestTimeStr.Length) / 2);
+    if (dnfAvg5)
+    {
+        meanTime5Str = "(DNF)";
+        avgTime5Str = "(DNF)";
+    }
+
+    MakeGap("width", windowWidth / 2 - ("Best time - ".Length + bestTimeStr.Length) / 2);
     Console.Write("Best time - ");
     SetTextColor(ColorType.Time);
     Console.WriteLine(bestTimeStr);
     ResetColors();
 
-    MakeGap("width", wWidth / 2 - ("Average time - ".Length + avgTimeStr.Length) / 2);
+    MakeGap("width", windowWidth / 2 - ("Average time - ".Length + avgTimeStr.Length) / 2);
     Console.Write("Average time - ");
     SetTextColor(ColorType.Time);
     Console.WriteLine(avgTimeStr);
     ResetColors();
 
-    MakeGap("width", wWidth / 2 - ("Average time of 5 - ".Length + avgTime5Str.Length) / 2);
+    MakeGap("width", windowWidth / 2 - ("Average time of 5 - ".Length + avgTime5Str.Length) / 2);
     Console.Write("Average time of 5 - ");
     SetTextColor(ColorType.Time);
     Console.WriteLine(avgTime5Str);
+    ResetColors();
+
+    MakeGap("width", windowWidth / 2 - ("Mean time of 5 - ".Length + meanTime5Str.Length) / 2);
+    Console.Write("Mean time of 5 - ");
+    SetTextColor(ColorType.Time);
+    Console.WriteLine(meanTime5Str);
 
     MakeGap("height", 3);
     SetTextColor(ColorType.Info);
@@ -470,27 +496,27 @@ void DisplayTimer()
 {
     Console.Clear();
     SetTextColor(ColorType.Time);
-    MakeGap("height", wHeight / 2);
-    MakeGap("width", wWidth / 2 - timer.GetTime().Length / 2);
+    MakeGap("height", windowHeight / 2);
+    MakeGap("width", windowWidth / 2 - timer.GetTime().Length / 2);
     Console.WriteLine(timer.GetTime());
 
-    Stopwatch sw = new Stopwatch();
+    Stopwatch sw = new();
     sw.Restart();
     while (sw.ElapsedMilliseconds <= 50)
     {
         if (GetInput() == Result.TimerStopped)
-        { 
-            Result result = Result.Nothing;
+        {
+            Result result;
             HandleInput(Result.TimerStopped);
             while (true)
             {
                 ResetColors();
                 Console.Clear();
-                MakeGap("height", wHeight / 2 - 1);
-                MakeGap("width", wWidth / 2 - "Your time:".Length / 2);
+                MakeGap("height", windowHeight / 2 - 1);
+                MakeGap("width", windowWidth / 2 - "Your time:".Length / 2);
                 Console.WriteLine("Your time:");
                 SetTextColor(ColorType.Time);
-                MakeGap("width", wWidth / 2 - timer.GetTime().Length / 2);
+                MakeGap("width", windowWidth / 2 - timer.GetTime().Length / 2);
                 Console.WriteLine($"{timer.GetTime()}");
                 ResetColors();
                 MakeGap("height", 3);
@@ -557,17 +583,17 @@ void Quit()
 OnLoad();
 while (programCycle)
 {
-    wHeight = Console.WindowHeight;
-    wWidth = Console.WindowWidth;
-    if (wWidth < 66)
+    windowHeight = Console.WindowHeight;
+    windowWidth = Console.WindowWidth;
+    if (windowWidth < 66)
     {
-        wWidth = 66;
-        Console.WindowWidth = wWidth;
+        windowWidth = 66;
+        Console.WindowWidth = windowWidth;
     }
-    if (wHeight < 24)
+    if (windowHeight < 24)
     {
-        wHeight = 24;
-        Console.WindowHeight = wHeight;
+        windowHeight = 24;
+        Console.WindowHeight = windowHeight;
     }
     Console.Clear();
     scramble.Generate();

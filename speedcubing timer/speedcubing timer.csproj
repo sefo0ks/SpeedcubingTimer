@@ -13,4 +13,8 @@
     <Content Include="bin\Debug\net6.0\icon.ico" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="..\.editorconfig" Link=".editorconfig" />
+  </ItemGroup>
+
 </Project>
