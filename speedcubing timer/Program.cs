@@ -462,6 +462,12 @@ void ShowRecords()
         avgTime5Str = "(DNF)";
     }
 
+    if (allSolves.Count < 5)
+    {
+        meanTime5Str = "NONE";
+        avgTime5Str = "NONE";
+    }
+
     MakeGap("width", windowWidth / 2 - ("Best time - ".Length + bestTimeStr.Length) / 2);
     Console.Write("Best time - ");
     SetTextColor(ColorType.Time);
