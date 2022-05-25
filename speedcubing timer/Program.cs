@@ -21,19 +21,18 @@ string settingsSavePath = @$"{savePath}\settings.txt";
 
 void OnLoad()
 {
-    if (!Directory.Exists(savePath) || !File.Exists(solvesSavePath))
-        return;
+    if (!Directory.Exists(savePath))
+        Directory.CreateDirectory(savePath);
 
     ReadFromSavedSolves();
-
-    if (!File.Exists(settingsSavePath))
-        return;
-
     LoadSettings();
 }
 void LoadSettings()
 {
     bool fail = false;
+
+    if (!File.Exists(settingsSavePath))
+        ChangeSetting(Settings.None);
 
     using (StreamReader sr = new(settingsSavePath))
     {
@@ -90,6 +89,9 @@ void MakeGap(string heightOrwidth, int value)
 // Add solves to allSolves Collection
 void ReadFromSavedSolves()
 {
+    if (!File.Exists(solvesSavePath))
+        return;
+
     allSolves.Clear();
     using (StreamReader sr = new(solvesSavePath))
     {
